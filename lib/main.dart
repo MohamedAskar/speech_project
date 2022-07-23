@@ -79,12 +79,15 @@ class _TextToSpeechScreenState extends State<TextToSpeechScreen> {
 
   speak(String text) async {
     await flutterTts.setLanguage(languageCode);
-    await flutterTts.setPitch(1);
+    await flutterTts.setPitch(pitch);
+    await flutterTts.setSpeechRate(rate);
     await flutterTts.setVolume(1.0);
     await flutterTts.speak(text);
   }
 
   String text = '';
+  double rate = 0.5; // Range: 0-2
+  double pitch = 1.0; // Range: 0-2
 
   @override
   Widget build(BuildContext context) {
@@ -99,28 +102,6 @@ class _TextToSpeechScreenState extends State<TextToSpeechScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            DropdownButtonFormField(
-                value: languageCode,
-                items: const <DropdownMenuItem<String>>[
-                  DropdownMenuItem(
-                    value: "it-IT",
-                    child: Text('Italian'),
-                  ),
-                  DropdownMenuItem(
-                    value: "en-US",
-                    child: Text('English'),
-                  ),
-                  DropdownMenuItem(
-                    value: "fr-FR",
-                    child: Text('French'),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    languageCode = value.toString();
-                  });
-                }),
-            const SizedBox(height: 20),
             TextFormField(
               onFieldSubmitted: (value) {
                 setState(() {
@@ -142,6 +123,74 @@ class _TextToSpeechScreenState extends State<TextToSpeechScreen> {
                 hintText: 'Start Typing...',
                 // hintStyle: textUtils.textFieldHintStyle,
               ),
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField(
+                value: languageCode,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderSide: BorderSide(width: 2, color: Colors.black)),
+                ),
+                items: const <DropdownMenuItem<String>>[
+                  DropdownMenuItem(
+                    value: "it-IT",
+                    child: Text('Italian'),
+                  ),
+                  DropdownMenuItem(
+                    value: "en-US",
+                    child: Text('English'),
+                  ),
+                  DropdownMenuItem(
+                    value: "fr-FR",
+                    child: Text('French'),
+                  ),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    languageCode = value.toString();
+                  });
+                }),
+            const SizedBox(height: 18),
+            Row(
+              children: <Widget>[
+                const Text('Rate'),
+                Expanded(
+                  child: Slider(
+                    value: rate,
+                    min: 0,
+                    max: 1,
+                    divisions: 10,
+                    label: rate.toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        rate = value;
+                      });
+                    },
+                  ),
+                ),
+                Text('(${rate.toStringAsFixed(2)})'),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                const Text('Pitch'),
+                Expanded(
+                  child: Slider(
+                    value: pitch,
+                    min: 0,
+                    max: 2,
+                    divisions: 10,
+                    label: pitch.toString(),
+                    onChanged: (double value) {
+                      setState(() {
+                        pitch = value;
+                      });
+                    },
+                  ),
+                ),
+                Text('(${pitch.toStringAsFixed(2)})'),
+              ],
             ),
             const SizedBox(height: 22),
             ElevatedButton(
